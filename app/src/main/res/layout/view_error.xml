@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:visibility="gone"
+              android:id="@+id/_errorView"
+              android:layout_centerInParent="true"
+              android:layout_width="300dp"
+              android:layout_height="match_parent">
+    <TextView
+
+            android:text="Сервер не отвечоет."
+            android:gravity="center"
+            android:textStyle="normal"
+            android:textColor="#000"
+            android:textSize="16sp"
+            android:layout_width="match_parent" android:layout_height="wrap_content"/>
+    <TextView
+            android:id="@+id/_tryAgainLoad"
+            android:text="Попробовать снова"
+            android:paddingVertical="10dp"
+            android:background="#00B0FF"
+            android:gravity="center"
+            android:textStyle="normal"
+            android:textColor="#000"
+            android:textSize="16sp"
+            android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+
+</LinearLayout>
