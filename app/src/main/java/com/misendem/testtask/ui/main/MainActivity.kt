@@ -15,7 +15,6 @@ import com.misendem.testtask.models.Item
 import com.misendem.testtask.ui.main.adapter.CommentsAdapter
 import com.misendem.testtask.ui.main.adapter.PhotoAdapter
 import com.misendem.testtask.ui.main.adapter.RatingsAdapter
-import com.misendem.testtask.ui.main.view.MainView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.view_error.*
 import java.io.IOException

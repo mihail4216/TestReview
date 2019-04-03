@@ -2,11 +2,11 @@ package com.misendem.testtask.models
 
 import com.google.gson.annotations.SerializedName
 
-class ReviewModel(
+class Data(
     @SerializedName("review")
-    var review:S
+    var review:ReviewModel
 )
-class S(
+class ReviewModel(
 @SerializedName("id")
     var id: Int,
 @SerializedName("status_title")

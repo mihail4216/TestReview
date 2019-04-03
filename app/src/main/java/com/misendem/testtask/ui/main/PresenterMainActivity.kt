@@ -5,7 +5,6 @@ import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.misendem.testtask.App
 import com.misendem.testtask.models.*
-import com.misendem.testtask.ui.main.view.MainView
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -84,7 +83,7 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
 
     }
 
-    private fun setModel(model: ReviewModel?) {
+    private fun setModel(model: Data?) {
         if (model != null) {
             setOrder(model.review.order)    //устанавливаем дату
             redirectProperties(model.review.properties)     //устанавливаем вьюхи

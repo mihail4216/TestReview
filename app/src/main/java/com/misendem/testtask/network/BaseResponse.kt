@@ -19,10 +19,6 @@ class BaseResponse<T> {
     val actions: ArrayList<Actions>? = null
 
 }
-class ObjectResponse<T> {
-    @SerializedName("review")
-    var review: T? = null
-}
 
 class Error
 class Actions

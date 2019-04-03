@@ -1,4 +1,4 @@
-package com.misendem.testtask.ui.main.view
+package com.misendem.testtask.ui.main
 
 import android.net.Uri
 import com.arellomobile.mvp.MvpView
