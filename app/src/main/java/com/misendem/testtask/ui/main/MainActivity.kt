@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
@@ -55,8 +56,10 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         }
         _reviewTextList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         _reviewRatingList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-//        if (!mPresenter.isInRestoreState(this))
-//            mPresenter.loadReview()
+    }
+
+    override fun hideError() {
+        _errorView.visibility = View.GONE
     }
 
     private fun initPhotoBlock() {
@@ -128,8 +131,14 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
     override fun addViewPhoto(uri: Uri) {
         val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
-        if (bitmap != null)
-            (_recyclerViewPhoto.adapter as PhotoAdapter).addBitmap(bitmap)
+
+        if (bitmap != null) {
+            val roundBitmap = RoundedBitmapDrawableFactory.create(resources, bitmap)
+            val roundPx = bitmap.width * 0.025f
+            roundBitmap.cornerRadius = roundPx
+            (_recyclerViewPhoto.adapter as PhotoAdapter).addBitmap(roundBitmap)
+
+        }
     }
 
     override fun deleteBitmap(it: Int) {
@@ -143,8 +152,9 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     }
 
     override fun setAverageRating(rating: Float?) {
-        _txtAverageRating.text = String.format("%.2g%n", rating)
-        _txtAverageRating.setBackgroundColor(resources.getColor(R.color.colorAccent))
+        val rating = String.format("%.2g", rating)
+        _txtAverageRating.text = rating
+        _contAverageRating.setBackgroundColor(resources.getColor(R.color.colorAccent))
     }
 
     override fun setOrderID(id: String) {
@@ -162,7 +172,9 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         }
     }
 
-
+    override fun setTextBtnAdd(text: String) {
+        _addPhoto.text = text
+    }
 
     override fun hideBtnAdd() {
         _addPhoto.visibility = View.GONE
@@ -178,11 +190,11 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     }
 
     override fun setText(text: String, pos: Int) {
-        (_reviewTextList.adapter as CommentsAdapter).setText(text,pos)
+        (_reviewTextList.adapter as CommentsAdapter).setText(text, pos)
     }
 
     override fun setRating(rating: Float, pos: Int) {
-        (_reviewRatingList.adapter as RatingsAdapter).setRating(rating,pos)
+        (_reviewRatingList.adapter as RatingsAdapter).setRating(rating, pos)
 
     }
 
@@ -194,12 +206,14 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     override fun setFailedBtnSend() {
         _btnSendFeedback.setBackgroundColor(Color.parseColor("#F6F6F6"))
         _btnSendFeedback.setTextColor(Color.parseColor("#999999"))
+        _btnSendFeedback.isClickable = false
 
     }
 
     override fun setSuccessBtnSend() {
         _btnSendFeedback.setBackgroundColor(Color.parseColor("#498BC3"))
         _btnSendFeedback.setTextColor(Color.WHITE)
+        _btnSendFeedback.isClickable = true
     }
 
 

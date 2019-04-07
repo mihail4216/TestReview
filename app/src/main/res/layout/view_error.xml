@@ -4,6 +4,7 @@
               android:visibility="gone"
               android:id="@+id/_errorView"
               android:layout_centerInParent="true"
+              android:layout_gravity="center"
               android:layout_width="300dp"
               android:layout_height="match_parent">
     <TextView

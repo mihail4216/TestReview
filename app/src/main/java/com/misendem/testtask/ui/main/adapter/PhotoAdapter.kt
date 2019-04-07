@@ -1,6 +1,7 @@
 package com.misendem.testtask.ui.main.adapter
 
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,7 +11,7 @@ import com.misendem.testtask.ui.main.view.ViewHolderPhoto
 class PhotoAdapter: RecyclerView.Adapter<ViewHolderPhoto> (){
 
     var onClickDelete: ((Int) -> Unit)? = null
-    private val arrayBitmap = arrayListOf<Bitmap>()
+    private val arrayBitmap = arrayListOf<Drawable>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderPhoto {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.view_holder_photo,parent,false)
@@ -27,7 +28,7 @@ class PhotoAdapter: RecyclerView.Adapter<ViewHolderPhoto> (){
 
     }
 
-    fun addBitmap(bitmap: Bitmap){
+    fun addBitmap(bitmap: Drawable){
         arrayBitmap.add(bitmap)
         notifyItemChanged(arrayBitmap.size-1)
     }

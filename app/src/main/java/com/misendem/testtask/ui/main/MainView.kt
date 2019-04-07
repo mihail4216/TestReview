@@ -43,4 +43,6 @@ interface MainView : MvpView {
 
     fun setText(text: String, pos: Int)
     fun setRating(rating: Float, pos: Int)
+    fun setTextBtnAdd(text: String)
+    fun hideError()
 }

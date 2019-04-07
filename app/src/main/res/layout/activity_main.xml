@@ -5,14 +5,55 @@
         tools:context=".ui.main.MainActivity"
         android:background="#fff"
         android:layout_height="match_parent" android:layout_width="match_parent">
-    <include layout="@layout/view_error"/>
+    <include
+            layout="@layout/view_error"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"/>
     <ProgressBar
             android:id="@+id/_progressBar"
             android:backgroundTint="@color/colorPrimary"
             android:layout_centerInParent="true"
             android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    <RelativeLayout
+            android:id="@+id/appbar"
+            android:layout_width="wrap_content" android:layout_height="56dp">
+
+        <View
+                android:id="@+id/_btnExit"
+                android:layout_marginLeft="16dp"
+                android:layout_marginVertical="16dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="@drawable/ic_grey"
+
+        />
+        <TextView
+                android:textStyle="bold"
+                android:id="@+id/mainLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:layout_toRightOf="@+id/_btnExit"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="35dp"
+                android:layout_marginRight="16dp"
+                android:text="Отзыв о проживании"
+                android:textColor="#000"
+
+
+        />
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#EDEDEF"
+                android:layout_alignParentBottom="true"
+        />
+
+    </RelativeLayout>
     <android.support.v4.widget.NestedScrollView
             android:id="@+id/_contentContainer"
+            android:layout_below="@id/appbar"
             android:layout_above="@+id/_btnSendFeedback"
             android:layout_height="match_parent" android:layout_width="match_parent">
 
@@ -20,52 +61,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
         >
-            <RelativeLayout
-                    android:id="@+id/appbar"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content">
 
-                <View
-                        android:id="@+id/_btnExit"
-                        android:layout_margin="16dp"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:background="@mipmap/exit"
-
-                />
-                <TextView
-                        android:textStyle="bold"
-                        android:id="@+id/mainLabel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:layout_toRightOf="@+id/_btnExit"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="35dp"
-                        android:layout_marginRight="16dp"
-                        android:text="Отзыв о проживании"
-                        android:textColor="#000"
-
-
-                />
-                <View
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:background="#EDEDEF"
-                        android:layout_alignParentBottom="true"
-                />
-
-            </RelativeLayout>
 
             <RelativeLayout
                     android:id="@+id/_orderContainer"
-                    android:layout_below="@+id/appbar"
                     android:layout_marginVertical="8dp"
                     android:layout_width="match_parent" android:layout_height="wrap_content">
                 <View
 
                         android:id="@+id/iconHelp"
                         android:layout_width="20dp" android:layout_height="20dp"
-                        android:background="@mipmap/info"
+                        android:background="@drawable/ic_info"
                         android:layout_marginLeft="18dp"
                         android:layout_centerVertical="true"
                 />
@@ -75,8 +81,9 @@
                         android:id="@+id/_dateOrder"
                         android:layout_marginTop="17dp"
                         android:textColor="#000"
+                        android:text=""
                         android:layout_toRightOf="@+id/iconHelp"
-                        android:layout_marginLeft="34dp"
+                        android:layout_marginLeft="37dp"
                         android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 
                 <TextView
@@ -86,7 +93,7 @@
                         android:layout_marginBottom="17dp"
 
                         android:layout_toRightOf="@+id/iconHelp"
-                        android:layout_marginLeft="34dp"
+                        android:layout_marginLeft="37dp"
                         android:layout_width="wrap_content" android:layout_height="wrap_content"/>
                 <View
                         android:layout_width="match_parent"
@@ -101,23 +108,29 @@
                     android:layout_below="@+id/_orderContainer"
                     android:layout_width="match_parent" android:layout_height="wrap_content">
 
-                <TextView
-
-                        android:textSize="18sp"
-                        android:text="0"
-                        android:gravity="center"
-                        android:textColor="#fff"
-                        android:id="@+id/_txtAverageRating"
+                <RelativeLayout
+                        android:id="@+id/_contAverageRating"
                         android:layout_marginVertical="18dp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="14dp"
                         android:background="#D8D8D8"
-                        android:layout_width="42dp" android:layout_height="42dp"/>
+                        android:layout_width="42dp"
+                        android:layout_height="42dp">
+
+                    <TextView
+                            android:layout_centerInParent="true"
+                            android:textSize="18sp"
+                            android:text="0"
+                            android:gravity="center"
+                            android:textColor="#fff"
+                            android:id="@+id/_txtAverageRating"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                </RelativeLayout>
                 <TextView
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="#000"
-                        android:layout_toRightOf="@+id/_txtAverageRating"
+                        android:layout_toRightOf="@+id/_contAverageRating"
                         android:layout_centerVertical="true"
                         android:text="Средняя оценка"
                         android:layout_width="match_parent" android:layout_height="wrap_content"/>
@@ -175,10 +188,10 @@
 
             <android.support.v7.widget.RecyclerView
                     android:layout_marginTop="17dp"
-                    android:layout_marginHorizontal="16dp"
                     android:layout_below="@+id/labelPhoto"
                     android:id="@+id/_recyclerViewPhoto"
                     android:layout_width="wrap_content"
+                    android:layout_marginBottom="26dp"
                     android:layout_height="120dp"/>
             <View
                     android:id="@+id/_fakePhoto"
@@ -189,7 +202,6 @@
                     android:layout_below="@+id/labelPhoto"
                     android:layout_width="200dp" android:layout_height="120dp"/>
             <TextView
-                    android:layout_marginTop="24dp"
                     android:id="@+id/_addPhoto"
                     android:textStyle="bold"
                     android:textColor="#498BC3"

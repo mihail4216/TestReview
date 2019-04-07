@@ -13,8 +13,11 @@ class ViewHolderRatings(itemView: View) : RecyclerView.ViewHolder(itemView) {
             itemView._ratingBarView.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->  }
             itemView._ratingBarView.rating = item.valueRating!!
         }
-        itemView._ratingBarView.setOnRatingBarChangeListener { bar, rating, fromUSer ->
+        itemView._ratingBarView.setOnRatingBarChangeListener { bar, rating, fromUser ->
             rating(rating, adapterPosition)
+            if ( fromUser ) {
+                itemView._ratingBarView.rating = Math.ceil(rating.toDouble()).toFloat()
+            }
         }
     }
 

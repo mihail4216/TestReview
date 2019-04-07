@@ -12,6 +12,7 @@ class ViewHolderComment(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun onBind(item: Item, textChanged: (String, Int) -> Unit) {
         watcherText = Watcher(textChanged)
         itemView._txtLabelView.text = item.title
+        itemView._editTextView.hint = if (adapterPosition == 0) "что вам понравилось" else "что вам не понравилось"
         if (item.valueComment != null) {
 
             itemView._editTextView.removeTextChangedListener(watcherText)

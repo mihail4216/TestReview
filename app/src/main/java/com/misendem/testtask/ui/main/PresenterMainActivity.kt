@@ -13,6 +13,7 @@ import io.reactivex.functions.Function
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
+import java.text.DateFormatSymbols
 
 @InjectViewState
 class PresenterMainActivity : MvpPresenter<MainView>() {
@@ -42,14 +43,9 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
         subjectAll.onNext(uri)
         subjectPhoto.onNext(arrayPhoto.size)
         viewState.addViewPhoto(uri)
-        if (arrayPhoto.size >= 3) {
-            viewState.hideBtnAdd()
-            viewState.hideGraySquare()
-        } else {
-            viewState.showBtnAdd()
-            viewState.showGraySquare()
-        }
+        checkArrayPhoto()
     }
+
 
     fun onClickGraySquare() {
         viewState.startGallery()
@@ -58,6 +54,7 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
     fun loadReview() {
         viewState.showProgressBar()
         viewState.hideContent()
+        viewState.hideError()
 
         disposable.add(App.instance.API.getPreview()
             .flatMap {
@@ -66,19 +63,21 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
                 else
                     Flowable.error(Exception(it.errors?.get(0).toString()))
             }
-            .onExceptionResumeNext {
-            }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnError {
+                it.printStackTrace()
                 viewState.showError()
+                viewState.hideProgressBar()
             }
-            .subscribe {
+            .subscribe( {
                 viewState.hideProgressBar()
                 viewState.showContent()
                 setModel(it)
 
-            })
+            },{
+                it.printStackTrace()
+            }))
 
 
     }
@@ -93,17 +92,37 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
 
     }
 
+    private fun checkArrayPhoto(){
+        when {
+            arrayPhoto.size == 0 -> {
+                viewState.showBtnAdd()
+                viewState.showGraySquare()
+                viewState.setTextBtnAdd("Добавить")
+            }
+            arrayPhoto.size in 1..2 -> {
+                viewState.hideGraySquare()
+                viewState.showBtnAdd()
+                viewState.setTextBtnAdd("Добавить еще")
+            }
+            else->{
+                viewState.hideBtnAdd()
+                viewState.hideGraySquare()
+            }
+        }
+    }
+
     private fun setListenerAllView() {
         disposable.add(
-            subjectAll.flatMap {
-                Observable.combineLatest(arrayObservableEditText, Function<Array<in String>, Boolean> {
-                    for (any in it) {
-                        if (any.toString().isEmpty())
-                            return@Function false
-                    }
-                    return@Function true
-                })
-            }
+            subjectAll
+                .flatMap {
+                    Observable.combineLatest(arrayObservableEditText, Function<Array<in String>, Boolean> {
+                        for (any in it) {
+                            if (any.toString().isEmpty())
+                                return@Function false
+                        }
+                        return@Function true
+                    })
+                }
                 .flatMap {
                     if (it)
                         Observable.combineLatest(arrayObservableRatingBar, Function<Array<in Float>, Boolean> {
@@ -177,6 +196,7 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
         viewState.showBtnAdd()
         subjectAll.onNext(it)
         subjectPhoto.onNext(arrayPhoto.size)
+        checkArrayPhoto()
 
     }
 
@@ -187,7 +207,8 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
             val endDay = order.date_end.slice(8..9)
             val month = order.date_begin.slice(5..6)
             val year = order.date_begin.slice(0..3)
-            date = "$beginDay - $endDay ${month}. $year"
+            val shortMonth = DateFormatSymbols().shortMonths[month.toInt() - 1]
+            date = "$beginDay - $endDay $shortMonth $year"
         } else {
             // меняем формат этой строки
         }
@@ -231,14 +252,14 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
         arrayObservableRatingBar[pos] = Observable.just(rating)
         subjectRating.onNext(rating)
         subjectAll.onNext(rating)
-        viewState.setRating(rating,pos)
+        viewState.setRating(rating, pos)
     }
 
     fun onTextChange(text: String, pos: Int) {
         arrayObservableEditText[pos] = Observable.just(text)
         subjectComment.onNext(text)
         subjectAll.onNext(text)
-        viewState.setText(text,pos)
+        viewState.setText(text, pos)
     }
 
     override fun onDestroy() {
