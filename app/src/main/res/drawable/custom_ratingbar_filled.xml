@@ -2,10 +2,10 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <item android:drawable="@drawable/stars_on" android:state_pressed="true" />
-    <item android:drawable="@drawable/stars_on" android:state_focused="true" />
-    <item android:drawable="@drawable/stars_on" android:state_selected="true" />
-    <item android:drawable="@drawable/stars_on"/>
+    <item android:drawable="@drawable/stars_on" android:state_window_focused="true" android:state_pressed="true" />
+    <item android:drawable="@drawable/stars_on" android:state_window_focused="true" android:state_focused="true" />
+    <item android:drawable="@drawable/stars_on" android:state_window_focused="true" android:state_selected="true" />
+    <item android:drawable="@drawable/stars_on" android:state_window_focused="true"/>
 
 
 </selector>

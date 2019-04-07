@@ -204,6 +204,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     }
 
     override fun setFailedBtnSend() {
+
         _btnSendFeedback.setBackgroundColor(Color.parseColor("#F6F6F6"))
         _btnSendFeedback.setTextColor(Color.parseColor("#999999"))
         _btnSendFeedback.isClickable = false
@@ -211,7 +212,7 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     }
 
     override fun setSuccessBtnSend() {
-        _btnSendFeedback.setBackgroundColor(Color.parseColor("#498BC3"))
+        _btnSendFeedback.background = resources.getDrawable(R.drawable.background_send_feedback)
         _btnSendFeedback.setTextColor(Color.WHITE)
         _btnSendFeedback.isClickable = true
     }
