@@ -80,7 +80,8 @@ class MainActivity : MvpAppCompatActivity(), MainView {
             mPresenter.onClickGraySquare()
         }
 
-        _btnExit.setOnClickListener { finish() }
+        _btnExit.setOnClickListener { 
+            startActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME))}
     }
 
 
@@ -217,5 +218,8 @@ class MainActivity : MvpAppCompatActivity(), MainView {
         _btnSendFeedback.isClickable = true
     }
 
+    override fun onBackPressed() {
+        startActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME))
+    }
 
 }
