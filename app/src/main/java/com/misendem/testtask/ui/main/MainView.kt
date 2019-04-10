@@ -8,7 +8,7 @@ import com.misendem.testtask.models.Item
 @StateStrategyType(AddToEndSingleStrategy::class)
 interface MainView : MvpView {
 
-    @StateStrategyType(SingleStateStrategy::class)
+//    @StateStrategyType(SingleStateStrategy::class)
     fun showError()
 
     fun setOrderID(id: String)
@@ -45,4 +45,5 @@ interface MainView : MvpView {
     fun setRating(rating: Float, pos: Int)
     fun setTextBtnAdd(text: String)
     fun hideError()
+    fun finishApp()
 }

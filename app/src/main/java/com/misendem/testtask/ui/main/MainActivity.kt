@@ -80,8 +80,13 @@ class MainActivity : MvpAppCompatActivity(), MainView {
             mPresenter.onClickGraySquare()
         }
 
-        _btnExit.setOnClickListener { 
-            startActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME))}
+        _btnExit.setOnClickListener {
+            mPresenter.onClickExit()
+            finish()}
+    }
+
+    override fun finishApp() {
+        finish()
     }
 
 
@@ -205,7 +210,6 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     }
 
     override fun setFailedBtnSend() {
-
         _btnSendFeedback.setBackgroundColor(Color.parseColor("#F6F6F6"))
         _btnSendFeedback.setTextColor(Color.parseColor("#999999"))
         _btnSendFeedback.isClickable = false
@@ -219,7 +223,8 @@ class MainActivity : MvpAppCompatActivity(), MainView {
     }
 
     override fun onBackPressed() {
-        startActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME))
+        super.onBackPressed()
+        mPresenter.onBackPressed()
     }
 
 }

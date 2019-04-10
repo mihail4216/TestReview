@@ -1,8 +1,12 @@
 package com.misendem.testtask.ui.main
 
+import android.content.Context.MODE_PRIVATE
 import android.net.Uri
+import android.util.Log
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.misendem.testtask.App
 import com.misendem.testtask.models.*
 import io.reactivex.Flowable
@@ -18,6 +22,10 @@ import java.text.DateFormatSymbols
 @InjectViewState
 class PresenterMainActivity : MvpPresenter<MainView>() {
 
+    companion object {
+        const val NAME_FILE_PREFERENCES = "shared"
+        const val KEY_MODEL = "modelKey"
+    }
 
     private val arrayObservableEditText = arrayListOf<Observable<String>>()
     private val arrayObservableRatingBar = arrayListOf<Observable<Float>>()
@@ -26,11 +34,17 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
 
     private val disposable = CompositeDisposable()
 
-    val subjectRating = PublishSubject.create<Float>()
-    val subjectComment = PublishSubject.create<String>()
-    val subjectAll = PublishSubject.create<Any>()
+    private val subjectRating = PublishSubject.create<Float>()
+    private val subjectComment = PublishSubject.create<String>()
+    private val subjectAll = PublishSubject.create<Any>()
 
+    private var mModelView = SavingModel(
+        arrayListOf(),
+        arrayListOf(),
+        arrayListOf()
+    )
 
+    private val sharedPreferences = App.instance.getSharedPreferences(NAME_FILE_PREFERENCES, MODE_PRIVATE)
     private val arrayPhoto = arrayListOf<Uri>()
 
     override fun onFirstViewAttach() {
@@ -38,8 +52,16 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
         loadReview()
     }
 
+
+    override fun onDestroy() {
+        Log.e("OnDestroy", "good")
+        dispose()
+        super.onDestroy()
+    }
+
     fun addPhoto(uri: Uri?) {
-        arrayPhoto.add(uri!!)
+        mModelView.arraySavingListPhoto.add(uri!!.toString())
+        arrayPhoto.add(uri)
         subjectAll.onNext(uri)
         subjectPhoto.onNext(arrayPhoto.size)
         viewState.addViewPhoto(uri)
@@ -70,14 +92,15 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
                 viewState.showError()
                 viewState.hideProgressBar()
             }
-            .subscribe( {
+            .subscribe({
                 viewState.hideProgressBar()
                 viewState.showContent()
                 setModel(it)
 
-            },{
+            }, {
                 it.printStackTrace()
-            }))
+            })
+        )
 
 
     }
@@ -87,12 +110,47 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
             setOrder(model.review.order)    //устанавливаем дату
             redirectProperties(model.review.properties)     //устанавливаем вьюхи
             setListenerAllView()        //слушаем эти вьюхи
+            readSaveData()          // чтение сохраненых данных
+            restoreData()       //  востановление данных
         }
 
 
     }
 
-    private fun checkArrayPhoto(){
+    private fun restoreData() {
+        restoreRatingsFilds()
+        restoreTextFields()
+        restorePhotoFields()
+        subjectAll.onNext(true)
+    }
+
+    private fun restorePhotoFields() {
+        for (i in mModelView.arraySavingListPhoto) {
+            val uri = Uri.parse(i)
+            arrayPhoto.add(uri)
+            viewState.addViewPhoto(uri)
+        }
+        subjectPhoto.onNext(mModelView.arraySavingListPhoto.size)
+        checkArrayPhoto()
+
+    }
+
+    private fun restoreTextFields() {
+        for (i in 0 until mModelView.arraySavingListComment.size) {
+            viewState.setText(mModelView.arraySavingListComment[i], i)
+            arrayObservableEditText[i] = Observable.just(mModelView.arraySavingListComment[i])
+        }
+    }
+
+    private fun restoreRatingsFilds() {
+        for (i in 0 until mModelView.arraySavingListRating.size) {
+            viewState.setRating(mModelView.arraySavingListRating[i], i)
+            arrayObservableRatingBar[i] = Observable.just(mModelView.arraySavingListRating[i])
+            subjectRating.onNext(mModelView.arraySavingListRating[i])
+        }
+    }
+
+    private fun checkArrayPhoto() {
         when {
             arrayPhoto.size == 0 -> {
                 viewState.showBtnAdd()
@@ -104,7 +162,7 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
                 viewState.showBtnAdd()
                 viewState.setTextBtnAdd("Добавить еще")
             }
-            else->{
+            else -> {
                 viewState.hideBtnAdd()
                 viewState.hideGraySquare()
             }
@@ -115,6 +173,7 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
         disposable.add(
             subjectAll
                 .flatMap {
+                    //проверка на пустоту строк
                     Observable.combineLatest(arrayObservableEditText, Function<Array<in String>, Boolean> {
                         for (any in it) {
                             if (any.toString().isEmpty())
@@ -124,6 +183,7 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
                     })
                 }
                 .flatMap {
+                    // проверка на пустоту рейтинга
                     if (it)
                         Observable.combineLatest(arrayObservableRatingBar, Function<Array<in Float>, Boolean> {
                             //                вычисляем среднее значение всех рейтинг вью
@@ -137,6 +197,7 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
                         Observable.just(false)
                 }
                 .flatMap {
+                    //..проверка на заполненость картинок
                     if (it)
                         subjectPhoto.flatMap {
                             if (it == 3)
@@ -150,6 +211,7 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
+                    saveData()
                     if (it)
                         viewState.setSuccessBtnSend()
                     else
@@ -190,6 +252,7 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
     }
 
     fun deletePhoto(it: Int) {
+        mModelView.arraySavingListPhoto.removeAt(it)
         arrayPhoto.removeAt(it)
         viewState.deleteBitmap(it)
         viewState.showGraySquare()
@@ -229,26 +292,30 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
 
     private fun addTextOrder(items: ArrayList<Item>) {
 
-        for (i in items)
+        for (i in items) {
             arrayObservableEditText.add(Observable.just(""))
+            mModelView.arraySavingListComment.add("")
+        }
         viewState.addCommentView(items)
     }
 
     private fun addRatingsOrder(items: ArrayList<Item>) {
-        for (i in items)
+        for (i in items) {
             arrayObservableRatingBar.add(Observable.just(0f))
+            mModelView.arraySavingListRating.add(0f)
+        }
         viewState.addRatingsView(items)
-//        }
     }
 
 
-    fun dispose() {
+    private fun dispose() {
         disposable.clear()
         disposable.dispose()
     }
 
 
     fun onRatingChange(rating: Float, pos: Int) {
+        mModelView.arraySavingListRating[pos] = rating
         arrayObservableRatingBar[pos] = Observable.just(rating)
         subjectRating.onNext(rating)
         subjectAll.onNext(rating)
@@ -256,15 +323,43 @@ class PresenterMainActivity : MvpPresenter<MainView>() {
     }
 
     fun onTextChange(text: String, pos: Int) {
+        mModelView.arraySavingListComment[pos] = text
         arrayObservableEditText[pos] = Observable.just(text)
         subjectComment.onNext(text)
         subjectAll.onNext(text)
         viewState.setText(text, pos)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        dispose()
+    private fun readSaveData() {
+        val gson = GsonBuilder().create()
+        val model = gson.fromJson<SavingModel>(sharedPreferences.getString(KEY_MODEL, ""), SavingModel::class.java)
+        mModelView = model
+    }
+
+    private fun saveData() {
+        val model = mModelView
+        val modelJson = Gson().toJson(model)
+        val edit = sharedPreferences.edit()
+        Log.e("save", modelJson)
+        edit.putString(KEY_MODEL, modelJson)
+        edit.apply()
+    }
+
+    private fun clearData() {
+        mModelView.arraySavingListComment.clear()
+        mModelView.arraySavingListPhoto.clear()
+        mModelView.arraySavingListRating.clear()
+        saveData()
+        Log.e("delete", "Pizdec")
+    }
+
+    fun onClickExit() {
+        clearData()
+        viewState.finishApp()
+    }
+
+    fun onBackPressed() {
+        clearData()
     }
 
 }

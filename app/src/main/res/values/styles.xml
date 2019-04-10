@@ -9,11 +9,12 @@
     </style>
 
 
-    <style name="CustomRatingBar" parent="@style/Widget.AppCompat.RatingBar">
+    <style name="CustomRatingBar" parent="@style/Widget.AppCompat.RatingBar.Indicator">
+    <!--<style name="CustomRatingBar" parent="@style/Widget.AppCompat.RatingBar">-->
         <item name="android:progressDrawable">@drawable/custom_ratingbar</item>
-        <!--<item name="android:indeterminateDrawable">@drawable/custom_ratingbar</item>-->
-        <item name="android:minHeight">22dip</item>
-        <item name="android:maxHeight">22dip</item>
+        <item name="android:indeterminateDrawable">@drawable/custom_ratingbar</item>
+        <item name="android:minHeight">22dp</item>
+        <item name="android:maxHeight">22dp</item>
         <item name="android:isIndicator">false</item>
     </style>
 
